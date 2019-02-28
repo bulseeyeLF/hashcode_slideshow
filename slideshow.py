@@ -119,7 +119,7 @@ if __name__ == "__main__":
         tag_counter, no_of_tags, no_of_unique_tags, _min, _max = get_counters(input_list)
         
         input_list = merge_verticals(input_list)
-        print input_list
+
         input_list.sort(cmp=sort_fn)
         score_pictures(input_list, tag_counter)
 
