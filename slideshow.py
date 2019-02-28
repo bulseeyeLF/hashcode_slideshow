@@ -122,6 +122,8 @@ def get_max_for_element(element, input_ls, mark_array):
     _maximum = -1
     index = None
     for i in range(len(input_list)):
+        if _maximum * 2 > input_ls[i]["no_of_tags"]:
+            break
         if mark_array[i]:
             continue
         a = get_score(input_ls[i], input_list[element])
@@ -165,7 +167,7 @@ if __name__ == "__main__":
         input_list = merge_verticals(input_list)
         # print input_list
 
-        # input_list.sort(cmp=sort_fn)
+        input_list.sort(cmp=sort_fn)
         mark = [False for x in range(len(input_list))]
 
         first, second = get_first_link(input_list, mark)
