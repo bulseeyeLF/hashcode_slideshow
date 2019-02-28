@@ -49,6 +49,22 @@ def create_input_object(vals, id):
     return {"orient": vals[0], "no_of_tags": int(vals[1]), "tags": [vals[x] for x in range(2, len(vals))], "id": id}
 
 
+def score_pictures(input_dicts, scores):
+    max_count = 1
+    min_count = 100
+    for i in input_dicts:
+        if len(i["tags"]) > max_count:
+            max_count = len(i["tags"])
+        if len(i["tags"]) < min_count:
+            min_count = len(i["tags"])
+        score = 0      
+        for tag in i["tags"]:
+            if scores[tag] > 1:
+                score += scores[tag]
+        i["score"] = score
+    print "Min tags {0}, max tags {1}".format(min_count, max_count)
+
+
 def sort_fn(val0, val1):
     if val0["no_of_tags"] > val1["no_of_tags"]:
         return -1
@@ -67,6 +83,7 @@ if __name__ == "__main__":
         tag_counter, no_of_tags, no_of_unique_tags, _min, _max = get_counters(input_list)
 
         input_list.sort(cmp=sort_fn)
+        score_pictures(input_list, tag_counter)
 
         print(input_list)
         print "No. of tags: {0}, no. of unique: {1}, max ocurrences: {2}, min ocurrences: {3}".format(
