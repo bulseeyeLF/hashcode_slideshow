@@ -51,16 +51,16 @@ def create_input_object(vals, id):
 def score_pictures(input_dicts, scores):
     max_count = 1
     min_count = 100
-    for i in input_dicts.keys():
-        if len(input_dicts[i]["tags"]) > max_count:
-            max_count = len(input_dicts[i]["tags"])
-        if len(input_dicts[i]["tags"]) < min_count:
-            min_count = len(input_dicts[i]["tags"])
+    for i in input_dicts:
+        if len(i["tags"]) > max_count:
+            max_count = len(i["tags"])
+        if len(i["tags"]) < min_count:
+            min_count = len(i["tags"])
         score = 0      
-        for tag in input_dicts[i]["tags"]:
+        for tag in i["tags"]:
             if scores[tag] > 1:
                 score += scores[tag]
-        input_dicts[i]["score"] = score
+        i["score"] = score
     print "Min tags {0}, max tags {1}".format(min_count, max_count)
 
 if __name__ == "__main__":
@@ -74,7 +74,7 @@ if __name__ == "__main__":
             input_list.append(create_input_object(split_values, i))
         tag_counter, no_of_tags, no_of_unique_tags, _min, _max = get_counters(input_list)
 
-        score_pictures(input_dicts, tag_counter)
+        score_pictures(input_list, tag_counter)
 
         print(input_list)
         print "No. of tags: {0}, no. of unique: {1}, max ocurrences: {2}, min ocurrences: {3}".format(
