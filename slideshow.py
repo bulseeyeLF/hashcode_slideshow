@@ -18,6 +18,12 @@ if len(sys.argv) < arg_len:
 input_path = sys.argv[1]
 
 
+def get_score(node_a, node_b):
+    set_a = set(node_a["tags"])
+    set_b = set(node_b["tags"])
+    return min(set_a.intersection(set_b), set_a.difference(set_b), set_b.difference(set_a))
+
+
 def find_min_max(tag_dict):
     current_minimum = sys.maxint
     current_maximum = 0
