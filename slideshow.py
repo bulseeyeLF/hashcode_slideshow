@@ -55,6 +55,37 @@ def create_input_object(vals, id):
     return {"orient": vals[0], "no_of_tags": int(vals[1]), "tags": [vals[x] for x in range(2, len(vals))], "id": id}
 
 
+def merge_verticals(input_dicts):
+    verticals = list()
+    horizontals = list()
+    for picture in input_dicts:
+        if picture["orient"] == "H":
+            horizontals.append(picture)
+        else:
+            verticals.append(picture)
+    used = [False for i in range(0, len(verticals))]
+    for i in range(0, len(verticals)):
+        if used[i]:
+            continue
+        max_vert = i
+        tag_set = set(verticals[i]["tags"])
+        max_count = len(tag_set)
+        for j in range(i+1, len(verticals)):
+            if used[j]:
+                continue
+            tag_set2 = set(verticals[j])
+            count = len(tag_set.union(tag_set2))
+            if count > max_count:
+                max_vert = j
+                max_count = count
+        if max_vert != i:
+            used[max_vert] = True
+            max_vert_set = list(set(verticals[max_vert]["tags"]).union(tag_set))
+            new_picture =  {"orient": "V", "no_of_tags": len(max_vert_set), "tags":max_vert_set, "id": verticals[i]["id"], "idvert": verticals[max_vert]["id"]}
+            horizontals.append(new_picture)
+    
+    return horizontals
+
 def score_pictures(input_dicts, scores):
     max_count = 1
     min_count = 100
@@ -86,7 +117,9 @@ if __name__ == "__main__":
             split_values = lines[i].split(" ")
             input_list.append(create_input_object(split_values, i))
         tag_counter, no_of_tags, no_of_unique_tags, _min, _max = get_counters(input_list)
-
+        
+        input_list = merge_verticals(input_list)
+        print input_list
         input_list.sort(cmp=sort_fn)
         score_pictures(input_list, tag_counter)
 
