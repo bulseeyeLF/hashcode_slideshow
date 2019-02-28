@@ -76,8 +76,15 @@ def sort_fn(val0, val1):
     return 1
 
 
+def get_rankings(input_ls):
+    rankings_per_id = [[] in range(len(input_ls))]
+
+
 if __name__ == "__main__":
     input_list = []
+    left = None
+    right = None
+
     with open(input_path, "r") as inp, open("output_txt", "w") as out:
         lines = inp.readlines()
         lines = [x.strip() for x in lines]
@@ -88,8 +95,9 @@ if __name__ == "__main__":
         tag_counter, no_of_tags, no_of_unique_tags, _min, _max = get_counters(input_list)
 
         input_list.sort(cmp=sort_fn)
-        score_pictures(input_list, tag_counter)
-
+        mark = [True for x in range(len(input_list))]
+        left_edge = right_edge = input_list[0]
+        i = 0
         print "No. of tags: {0}, no. of unique: {1}, max ocurrences: {2}, min ocurrences: {3}".format(
             no_of_tags, no_of_unique_tags, _max, _min
         )
