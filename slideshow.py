@@ -21,7 +21,7 @@ input_path = sys.argv[1]
 def find_min_max(tag_dict):
     current_minimum = sys.maxint
     current_maximum = 0
-    print(tag_dict)
+    # print(tag_dict)
     for key in tag_dict:
         if tag_dict[key] < current_minimum:
             current_minimum = tag_dict[key]
@@ -50,6 +50,20 @@ def get_counters(input_dict):
 def create_input_object(vals):
     return {"orient": vals[0], "no_of_tags": int(vals[1]), "tags": [vals[x] for x in range(2, len(vals))]}
 
+def score_pictures(input_dicts, scores):
+    max_count = 1
+    min_count = 100
+    for i in input_dicts.keys():
+        if len(input_dicts[i]["tags"]) > max_count:
+            max_count = len(input_dicts[i]["tags"])
+        if len(input_dicts[i]["tags"]) < min_count:
+            min_count = len(input_dicts[i]["tags"])
+        score = 0      
+        for tag in input_dicts[i]["tags"]:
+            if scores[tag] > 1:
+                score += scores[tag]
+        input_dicts[i]["score"] = score
+    print "Min tags {0}, max tags {1}".format(min_count, max_count)
 
 if __name__ == "__main__":
     input_dicts = {}
@@ -61,6 +75,8 @@ if __name__ == "__main__":
             split_values = lines[i].split(" ")
             input_dicts[i] = create_input_object(split_values)
         tag_counter, no_of_tags, no_of_unique_tags, _min, _max = get_counters(input_dicts)
+
+        score_pictures(input_dicts, tag_counter)
 
         print "No. of tags: {0}, no. of unique: {1}, max ocurrences: {2}, min ocurrences: {3}".format(
             no_of_tags, no_of_unique_tags, _max, _min
