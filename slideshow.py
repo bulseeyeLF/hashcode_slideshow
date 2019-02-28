@@ -21,7 +21,7 @@ input_path = sys.argv[1]
 def get_score(node_a, node_b):
     set_a = set(node_a["tags"])
     set_b = set(node_b["tags"])
-    return min(set_a.intersection(set_b), set_a.difference(set_b), set_b.difference(set_a))
+    return min(len(set_a.intersection(set_b)), len(set_a.difference(set_b)), len(set_b.difference(set_a)))
 
 
 def find_min_max(tag_dict):
@@ -68,7 +68,6 @@ def score_pictures(input_dicts, scores):
             if scores[tag] > 1:
                 score += scores[tag]
         i["score"] = score
-    print "Min tags {0}, max tags {1}".format(min_count, max_count)
 
 
 def sort_fn(val0, val1):
@@ -91,7 +90,6 @@ if __name__ == "__main__":
         input_list.sort(cmp=sort_fn)
         score_pictures(input_list, tag_counter)
 
-        print(input_list)
         print "No. of tags: {0}, no. of unique: {1}, max ocurrences: {2}, min ocurrences: {3}".format(
             no_of_tags, no_of_unique_tags, _max, _min
         )
