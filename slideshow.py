@@ -58,11 +58,15 @@ def create_input_object(vals, id):
 def merge_verticals(input_dicts):
     verticals = list()
     horizontals = list()
+    avg_horizontal = 0
     for picture in input_dicts:
         if picture["orient"] == "H":
             horizontals.append(picture)
+            avg_horizontal += len(picture["tags"])
         else:
             verticals.append(picture)
+    avg_horizontal /= len(horizontals)
+    # print "Avg ", avg_horizontal
     used = [False for i in range(0, len(verticals))]
     for i in range(0, len(verticals)):
         if used[i]:
@@ -75,14 +79,17 @@ def merge_verticals(input_dicts):
                 continue
             tag_set2 = set(verticals[j])
             count = len(tag_set.union(tag_set2))
-            if count > max_count:
+            if abs(avg_horizontal-count) > abs(avg_horizontal-max_count):
+            # if count > max_count:
                 max_vert = j
                 max_count = count
+            
         if max_vert != i:
             used[max_vert] = True
             max_vert_set = list(set(verticals[max_vert]["tags"]).union(tag_set))
             new_picture =  {"orient": "V", "no_of_tags": len(max_vert_set), "tags":max_vert_set, "id": verticals[i]["id"], "idvert": verticals[max_vert]["id"]}
             horizontals.append(new_picture)
+            # print len(tag_set), len(verticals[max_vert]["tags"]), len(new_picture["tags"])
     
     return horizontals
 
@@ -119,6 +126,7 @@ if __name__ == "__main__":
         tag_counter, no_of_tags, no_of_unique_tags, _min, _max = get_counters(input_list)
         
         input_list = merge_verticals(input_list)
+        # print input_list
 
         input_list.sort(cmp=sort_fn)
         score_pictures(input_list, tag_counter)
