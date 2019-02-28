@@ -45,8 +45,8 @@ def get_counters(input_list):
     return per_tag_count, global_no_of_tags, unique_tags, minimum, maximum
 
 
-def create_input_object(vals):
-    return {"orient": vals[0], "no_of_tags": int(vals[1]), "tags": [vals[x] for x in range(2, len(vals))]}
+def create_input_object(vals, id):
+    return {"orient": vals[0], "no_of_tags": int(vals[1]), "tags": [vals[x] for x in range(2, len(vals))], "id": id}
 
 
 if __name__ == "__main__":
@@ -57,9 +57,10 @@ if __name__ == "__main__":
         N = int(lines[0])
         for i in range(1, len(lines)):
             split_values = lines[i].split(" ")
-            input_list.append(create_input_object(split_values))
+            input_list.append(create_input_object(split_values, i))
         tag_counter, no_of_tags, no_of_unique_tags, _min, _max = get_counters(input_list)
 
+        print(input_list)
         print "No. of tags: {0}, no. of unique: {1}, max ocurrences: {2}, min ocurrences: {3}".format(
             no_of_tags, no_of_unique_tags, _max, _min
         )
