@@ -49,6 +49,12 @@ def create_input_object(vals, id):
     return {"orient": vals[0], "no_of_tags": int(vals[1]), "tags": [vals[x] for x in range(2, len(vals))], "id": id}
 
 
+def sort_fn(val0, val1):
+    if val0["no_of_tags"] > val1["no_of_tags"]:
+        return -1
+    return 1
+
+
 if __name__ == "__main__":
     input_list = []
     with open(input_path, "r") as inp, open("output_txt", "w") as out:
@@ -60,7 +66,10 @@ if __name__ == "__main__":
             input_list.append(create_input_object(split_values, i))
         tag_counter, no_of_tags, no_of_unique_tags, _min, _max = get_counters(input_list)
 
+        input_list.sort(cmp=sort_fn)
+
         print(input_list)
         print "No. of tags: {0}, no. of unique: {1}, max ocurrences: {2}, min ocurrences: {3}".format(
             no_of_tags, no_of_unique_tags, _max, _min
         )
+
