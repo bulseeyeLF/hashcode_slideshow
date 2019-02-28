@@ -1,10 +1,12 @@
 import sys
+import copy
 
 script_name = sys.argv[0]
 
 args = (
     script_name,
-    "input_file"
+    "input_file",
+    "output_file"
 )
 
 arg_len = len(args)
@@ -16,6 +18,7 @@ if len(sys.argv) < arg_len:
     sys.exit(-1)
 
 input_path = sys.argv[1]
+output_path = sys.argv[2]
 
 
 def get_score(node_a, node_b):
@@ -86,6 +89,7 @@ def merge_verticals(input_dicts):
     
     return horizontals
 
+
 def score_pictures(input_dicts, scores):
     max_count = 1
     min_count = 100
@@ -107,31 +111,93 @@ def sort_fn(val0, val1):
     return 1
 
 
-def get_rankings(input_ls):
-    rankings_per_id = [[] in range(len(input_ls))]
+def get_max_for_element(element, input_ls, mark_array):
+    _maximum = -1
+    index = None
+    for i in range(len(input_list)):
+        if mark_array[i]:
+            continue
+        a = get_score(input_ls[i], input_list[element])
+        if a > _maximum:
+            _maximum = a
+            index = i
+    return index, _maximum
 
+
+def get_first_link(input_list, marked_array):
+    _max = -1
+    best_index = None
+    cur_x = None
+    for x in range(len(input_list)):
+        new_index, new_max = get_max_for_element(x, input_list, marked_array)
+        if new_max > _max:
+            _max = new_max
+            best_index = new_index
+            cur_x = x
+    return cur_x, best_index
+
+
+default_struct = {
+    "left": {},
+    "right": {},
+    "index": None
+}
 
 if __name__ == "__main__":
     input_list = []
-    left = None
-    right = None
 
-    with open(input_path, "r") as inp, open("output_txt", "w") as out:
+    with open(input_path, "r") as inp, open(output_path, "w") as out:
         lines = inp.readlines()
         lines = [x.strip() for x in lines]
         N = int(lines[0])
         for i in range(1, len(lines)):
             split_values = lines[i].split(" ")
-            input_list.append(create_input_object(split_values, i))
+            input_list.append(create_input_object(split_values, i - 1))
         tag_counter, no_of_tags, no_of_unique_tags, _min, _max = get_counters(input_list)
         
         input_list = merge_verticals(input_list)
 
-        input_list.sort(cmp=sort_fn)
-        mark = [True for x in range(len(input_list))]
-        left_edge = right_edge = input_list[0]
-        i = 0
-        print "No. of tags: {0}, no. of unique: {1}, max ocurrences: {2}, min ocurrences: {3}".format(
-            no_of_tags, no_of_unique_tags, _max, _min
-        )
+        # input_list.sort(cmp=sort_fn)
+        mark = [False for x in range(len(input_list))]
+
+        first, second = get_first_link(input_list, mark)
+        first_elem = copy.deepcopy(default_struct)
+        first_elem["index"] = first
+
+        left = first_elem
+        second_elem = copy.deepcopy(default_struct)
+        second_elem["index"] = second
+        right = second_elem
+        left["right"] = right
+        right["left"] = left
+        mark[first] = mark[second] = True
+
+        for i in range(len(input_list) - 2):
+            new_index_1, potential_max_left = get_max_for_element(left["index"], input_list, mark)
+            new_index_2, potential_max_right = get_max_for_element(right["index"], input_list, mark)
+            if potential_max_left > potential_max_right:
+                new_elem = copy.deepcopy(default_struct)
+                new_elem["index"] = new_index_1
+                new_elem["right"] = left
+                left["left"] = new_elem
+                left = new_elem
+                mark[new_index_1] = True
+            else:
+                new_elem = copy.deepcopy(default_struct)
+                new_elem["index"] = new_index_2
+                new_elem["left"] = right
+                right["right"] = new_elem
+                right = new_elem
+                mark[new_index_2] = True
+
+
+        out.write(str(len(input_list)) + "\n")
+
+        while len(left) != 0:
+            current = left["index"]
+            if input_list[current]["orient"] == "H":
+                out.write(str(input_list[current]["id"]) + "\n")
+            else:
+                out.write("{0} {1}\n".format(input_list[current]["id"], input_list[current]["idvert"]))
+            left = left["right"]
 
